@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Programming | Code + Quiz with Data Saving</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        /* نفس التنسيقات السابقة مع بعض التعديلات */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(145deg, #0b1a2e, #0c1a2f); color: #eef4ff; padding: 2rem 1.5rem; }
+        .container { max-width: 1200px; margin: auto; background: rgba(18,28,40,0.7); backdrop-filter: blur(4px); border-radius: 2rem; padding: 2rem; border: 1px solid #2d4a6e; }
+        .main-header { text-align: center; margin-bottom: 1.5rem; }
+        .main-header h1 { font-size: 2.5rem; background: linear-gradient(135deg, #60a5fa, #a78bfa); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mode-buttons { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; }
+        .mode-btn { background: #1e2f3e; border: none; padding: 0.8rem 2rem; border-radius: 60px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .mode-btn.active { background: #ffaa44; color: #1a2a3a; }
+        .content-panel { display: none; animation: fade 0.3s; }
+        .content-panel.active-panel { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        .problem-item, .quiz-item { background: #1e2a3a; padding: 1rem; border-radius: 1.2rem; cursor: pointer; margin-bottom: 1rem; border-left: 4px solid #ffaa44; display: flex; justify-content: space-between; }
+        .code-area { position: relative; background: #0a0f18; padding: 1rem; border-radius: 1rem; margin-top: 1rem; direction: ltr; }
+        .copy-btn { position: absolute; top: 10px; left: 10px; background: #2c3e50; padding: 0.2rem 0.8rem; border-radius: 30px; cursor: pointer; }
+        .quiz-question { background: #1e2a3a; margin-bottom: 1rem; padding: 1rem; border-radius: 1rem; }
+        .quiz-options { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+        .btn { background: #ffaa44; border: none; padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: bold; cursor: pointer; margin-top: 0.5rem; margin-left: 0.5rem; }
+        .result-area { background: #0e1a28; padding: 1rem; border-radius: 1rem; margin-top: 1rem; }
+        .footer-credit { margin-top: 2.5rem; text-align: center; background: #07121e80; border-radius: 2rem; padding: 1.2rem; }
+        .social-links a { background: #1e2f3e; display: inline-flex; width: 40px; height: 40px; border-radius: 50%; justify-content: center; align-items: center; margin: 0 0.5rem; color: white; text-decoration: none; }
+        .social-links a:hover { background: #ffaa44; color: black; }
+        .student-form { background: #0c1722; padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #ffaa44; }
+        .student-form input { background: #1e2a3a; border: none; padding: 0.6rem 1rem; border-radius: 2rem; color: white; width: 100%; max-width: 250px; margin-left: 0.5rem; margin-bottom: 0.5rem; }
+        .error-msg { color: #f87171; font-size: 0.8rem; margin-top: 5px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="main-header"><h1><i class="fas fa-microchip"></i> Structural Programming Hub</h1><p>Codes + Quiz with student data saving</p></div>
+    <div class="mode-buttons">
+        <button id="codesModeBtn" class="mode-btn active"><i class="fas fa-code"></i> Codes</button>
+        <button id="quizzesModeBtn" class="mode-btn"><i class="fas fa-question-circle"></i> Quizzes</button>
+    </div>
+
+    <!-- Codes Panel -->
+    <div id="codesPanel" class="content-panel active-panel">
+        <div id="problemsList"></div>
+        <div id="codeDisplayArea" style="display: none;">
+            <button id="backToProblemsBtn" class="btn">← Back to problems</button>
+            <div id="codeContent"></div>
+        </div>
+    </div>
+
+    <!-- Quizzes Panel -->
+    <div id="quizzesPanel" class="content-panel">
+        <div id="quizzesList"></div>
+        <div id="quizDisplayArea" style="display: none;">
+            <button id="backToQuizzesBtn" class="btn">← Back to quizzes</button>
+            <div id="quizContent"></div>
+        </div>
+    </div>
+
+    <div class="footer-credit">
+        <div><i class="fas fa-laptop-code"></i> <span style="font-weight:800;">YOUSSEF SOBHY</span></div>
+        <div class="social-links">
+            <a href="https://wa.me/201066781530" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://t.me/YOU1_SSEF" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="https://www.youtube.com/@YOUSSEFSOBHY1" target="_blank"><i class="fab fa-youtube"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== 1. DATA ==========
+    const problemsListData = [
+        { title: "Length Converter (Feet/Inches to Centimeters)", description: "Convert feet & inches to total inches and then to centimeters.", code: `#include <iostream>\nusing namespace std;\n\nint main(void){\n    double totall;\n    double centemeters;\n    double inches;\n    double feet;\n\n    cout << "Enter Feet : "; cin >> feet;\n    cout << "Enter inches : " ;cin >> inches;\n    totall = 12 * inches + feet;\n    centemeters = totall * 2.54;\n    cout << "Total inches : " << totall << endl;\n    cout << "Centimeters : " << centemeters << endl;\n}\n// YOUSSEF SOBHY` }
+    ];
+
+    const quizData = [
+        { text: "A computer is:", options: ["An electronic device that performs arithmetic and logical operations", "A storage device only", "A programming language", "A network system"], correct: 0 },
+        { text: "A computer system consists of:", options: ["CPU only", "Hardware and software", "Memory only", "Programs only"], correct: 1 },
+        { text: "The CPU is an example of:", options: ["Hardware", "Software", "Data", "Algorithm"], correct: 0 },
+        { text: "Main memory is:", options: ["Permanent storage", "Temporary storage", "External device", "Software"], correct: 1 },
+        { text: "Secondary storage is used for:", options: ["Temporary storage", "Permanent storage", "Processing data", "Input only"], correct: 1 },
+        { text: "Which is an input device?", options: ["Keyboard", "Printer", "Monitor", "Speaker"], correct: 0 },
+        { text: "Which is an output device?", options: ["Mouse", "Monitor", "Keyboard", "Scanner"], correct: 1 },
+        { text: "Software is:", options: ["Physical parts of computer", "Programs run by the computer", "Storage devices", "Input devices"], correct: 1 },
+        { text: "Machine language consists of:", options: ["0s and 1s", "English words", "Symbols only", "Diagrams"], correct: 0 },
+        { text: "A bit is:", options: ["A binary digit", "8 bits", "A byte", "A program"], correct: 0 },
+        { text: "A byte equals:", options: ["2 bits", "4 bits", "8 bits", "16 bits"], correct: 2 }
+    ];
+
+    // ========== 2. CONFIGURATION: EDIT THIS PATH ==========
+    // 🔧 [تعديل هنا] ضع المسار الكامل للملف الذي سيتولى حفظ البيانات (مثل save_data.php)
+    // مثال: "https://example.com/save_data.php" أو "/save_data.php" إذا كان في نفس المجلد
+    const SAVE_ENDPOINT = "save_data.php";   // 👈 يمكنك تغيير هذا المسار إلى أي عنوان خادم لديك
+
+    // ========== 3. GLOBALS ==========
+    let currentStudent = { name: "", id: "" };  // سيتم تعبئتها قبل بدء الكويز
+    let quizScore = null;
+
+    // ========== 4. HELPER: Show student info form before starting quiz ==========
+    function requestStudentInfo(callback) {
+        const formHtml = `
+            <div class="student-form" id="studentInfoForm">
+                <h3><i class="fas fa-user-graduate"></i> Enter your details before starting the quiz</h3>
+                <input type="text" id="studentName" placeholder="Your Full Name" autocomplete="off">
+                <input type="text" id="studentId" placeholder="Your ID (e.g., 2024001)" autocomplete="off">
+                <button id="confirmStudentBtn" class="btn">Start Quiz</button>
+                <div id="formError" class="error-msg"></div>
+            </div>
+        `;
+        const quizContainer = document.getElementById('quizContent');
+        quizContainer.innerHTML = formHtml;
+        document.getElementById('confirmStudentBtn').addEventListener('click', () => {
+            const name = document.getElementById('studentName').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+            if (!name || !id) {
+                document.getElementById('formError').innerText = "Both Name and ID are required.";
+                return;
+            }
+            currentStudent = { name, id };
+            callback(); // proceed to show the actual quiz
+        });
+    }
+
+    // ========== 5. Display Quiz One (after student info) ==========
+    function showQuizOne() {
+        let quizHtml = `<h3><i class="fas fa-brain"></i> Quiz 1: Computer Basics</h3>
+                        <p><strong>Student:</strong> ${escapeHtml(currentStudent.name)} (ID: ${escapeHtml(currentStudent.id)})</p>`;
+        quizData.forEach((q, idx) => {
+            quizHtml += `
+                <div class="quiz-question" data-qid="${idx}">
+                    <p><strong>${idx+1}. ${escapeHtml(q.text)}</strong></p>
+                    <div class="quiz-options">
+            `;
+            q.options.forEach((opt, optIdx) => {
+                quizHtml += `<label><input type="radio" name="q${idx}" value="${optIdx}"> ${escapeHtml(opt)}</label>`;
+            });
+            quizHtml += `</div></div>`;
+        });
+        quizHtml += `<div class="quiz-actions">
+                        <button id="submitQuizBtn" class="btn"><i class="fas fa-check"></i> Submit Answers & Save</button>
+                        <button id="resetQuizBtn" class="btn"><i class="fas fa-undo"></i> Reset</button>
+                    </div>
+                    <div id="quizResultArea" class="result-area" style="display: none;"></div>`;
+        document.getElementById('quizContent').innerHTML = quizHtml;
+
+        // attach events
+        document.getElementById('submitQuizBtn').addEventListener('click', () => handleQuizSubmission());
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+            document.querySelectorAll('.quiz-question input[type="radio"]').forEach(r => r.checked = false);
+            document.getElementById('quizResultArea').style.display = 'none';
+        });
+    }
+
+    async function handleQuizSubmission() {
+        const selected = [];
+        for (let i = 0; i < quizData.length; i++) {
+            const radio = document.querySelector(`input[name="q${i}"]:checked`);
+            selected.push(radio ? parseInt(radio.value) : -1);
+        }
+        let score = 0;
+        let resultHtml = `<h4>Your Results:</h4>`;
+        for (let i = 0; i < quizData.length; i++) {
+            const isCorrect = (selected[i] === quizData[i].correct);
+            if (isCorrect) score++;
+            const userAns = (selected[i] !== -1) ? quizData[i].options[selected[i]] : "No answer";
+            const correctAns = quizData[i].options[quizData[i].correct];
+            resultHtml += `<div><strong>${i+1}. ${escapeHtml(quizData[i].text)}</strong><br>
+                            Your: ${escapeHtml(userAns)} ${isCorrect ? '✅' : '❌'}<br>
+                            <span style="color:#a3e635;">Correct: ${escapeHtml(correctAns)}</span>
+                           </div>`;
+        }
+        resultHtml += `<div style="background:#1e3a5f; padding:0.8rem; border-radius:1rem; margin-top:1rem;">Score: ${score} / ${quizData.length} (${Math.round(score/quizData.length*100)}%)</div>`;
+        const resultDiv = document.getElementById('quizResultArea');
+        resultDiv.innerHTML = resultHtml;
+        resultDiv.style.display = 'block';
+        quizScore = score;
+
+        // Save data to server
+        await saveStudentData(currentStudent.name, currentStudent.id, score, quizData.length);
+    }
+
+    async function saveStudentData(name, id, score, total) {
+        const payload = { name, id, score, total, timestamp: new Date().toISOString() };
+        try {
+            const response = await fetch(SAVE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                console.log("Data saved successfully");
+                // يمكن عرض رسالة للمستخدم
+                const msgDiv = document.getElementById('quizResultArea');
+                if (msgDiv) msgDiv.innerHTML += `<p style="color:#a3e635; margin-top:10px;"><i class="fas fa-save"></i> Your result has been saved.</p>`;
+            } else {
+                console.error("Save failed");
+            }
+        } catch (err) {
+            console.error("Error saving data:", err);
+        }
+    }
+
+    // ========== 6. Codes section functions (unchanged) ==========
+    function renderProblemsList() {
+        const container = document.getElementById('problemsList');
+        container.innerHTML = problemsListData.map((p, idx) => `<div class="problem-item" data-idx="${idx}"><span><i class="fas fa-file-code"></i> ${escapeHtml(p.title)}</span><i class="fas fa-chevron-left"></i></div>`).join('');
+        document.querySelectorAll('.problem-item').forEach(el => el.addEventListener('click', (e) => {
+            const idx = el.getAttribute('data-idx');
+            showCodeForProblem(parseInt(idx));
+        }));
+    }
+    function showCodeForProblem(idx) {
+        const p = problemsListData[idx];
+        const codeHtml = `<h3>${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p><div class="code-area"><button class="copy-btn" data-code="${escapeHtml(p.code)}"><i class="fas fa-copy"></i> Copy Code</button><pre><code class="language-cpp">${escapeHtml(p.code)}</code></pre></div>`;
+        document.getElementById('codeContent').innerHTML = codeHtml;
+        document.getElementById('problemsList').style.display = 'none';
+        document.getElementById('codeDisplayArea').style.display = 'block';
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        document.querySelector('.copy-btn')?.addEventListener('click', (e) => {
+            const code = e.currentTarget.getAttribute('data-code');
+            navigator.clipboard.writeText(code).then(() => { e.currentTarget.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => e.currentTarget.innerHTML = '<i class="fas fa-copy"></i> Copy Code', 1500); });
+        });
+    }
+    function showProblemsList() { document.getElementById('problemsList').style.display = 'block'; document.getElementById('codeDisplayArea').style.display = 'none'; }
+    
+    // Quiz listing and trigger
+    function renderQuizzesList() {
+        const container = document.getElementById('quizzesList');
+        container.innerHTML = `<div class="quiz-item" data-quiz="1"><span><i class="fas fa-puzzle-piece"></i> Quiz 1: Computer Basics (11 questions)</span><i class="fas fa-chevron-left"></i></div>`;
+        document.querySelector('.quiz-item')?.addEventListener('click', () => {
+            // Before showing quiz, ask for name & ID
+            document.getElementById('quizzesList').style.display = 'none';
+            document.getElementById('quizDisplayArea').style.display = 'block';
+            requestStudentInfo(() => {
+                showQuizOne();
+            });
+        });
+    }
+    function showQuizzesList() { document.getElementById('quizzesList').style.display = 'block'; document.getElementById('quizDisplayArea').style.display = 'none'; }
+
+    // UI Mode switching
+    function setActiveMode(mode) {
+        if (mode === 'codes') {
+            document.getElementById('codesPanel').classList.add('active-panel');
+            document.getElementById('quizzesPanel').classList.remove('active-panel');
+            document.getElementById('codesModeBtn').classList.add('active');
+            document.getElementById('quizzesModeBtn').classList.remove('active');
+            showProblemsList();
+        } else {
+            document.getElementById('quizzesPanel').classList.add('active-panel');
+            document.getElementById('codesPanel').classList.remove('active-panel');
+            document.getElementById('quizzesModeBtn').classList.add('active');
+            document.getElementById('codesModeBtn').classList.remove('active');
+            showQuizzesList();
+        }
+    }
+
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    document.getElementById('backToProblemsBtn').addEventListener('click', showProblemsList);
+    document.getElementById('backToQuizzesBtn').addEventListener('click', showQuizzesList);
+    document.getElementById('codesModeBtn').addEventListener('click', () => setActiveMode('codes'));
+    document.getElementById('quizzesModeBtn').addEventListener('click', () => setActiveMode('quizzes'));
+
+    renderProblemsList();
+    renderQuizzesList();
+    setActiveMode('codes');
+</script>
+</body>
+</html>
